@@ -1,1 +1,25 @@
+name: Notify Discord on Bug Report
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  discord_notification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Send bug report to Discord
+        if: github.event.issue.labels.*.name contains 'bug'
+        uses: peter-evans/discord-webhook-action@v1
+        with:
+          url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          content: |
+            **New Bug Report Created!**
+            **Title**: ${{ github.event.issue.title }}
+            **User**: ${{ github.event.issue.user.login }}
+            **URL**: ${{ github.event.issue.html_url }}
+            **Description**: ${{ github.event.issue.body }}
 
