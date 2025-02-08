@@ -1,36 +1,27 @@
-name: Notify Discord on Bug Report
+name: Issue Webhook Notifier
 
 on:
   issues:
     types: [opened]
 
 jobs:
-  discord_notification:
+  notify-webhook:
     runs-on: ubuntu-latest
-    steps:
-      - name: Check out the repository
-        uses: actions/checkout@v2
 
-      - name: Send bug report to Discord
-        if: |
-          contains(toJson(github.event.issue.labels.*.name), 'bug')
+    steps:
+      - name: Send webhook request
         run: |
-          curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
-          -H "Content-Type: application/json" \
-          -d '{
-                "content": "**New Bug Report Created!**",
-                "embeds": [
-                  {
-                    "title": "${{ github.event.issue.title }}",
-                    "description": "${{ github.event.issue.body }}",
-                    "url": "${{ github.event.issue.html_url }}",
-                    "fields": [
-                      {
-                        "name": "User",
-                        "value": "${{ github.event.issue.user.login }}",
-                        "inline": true
-                      }
-                    ]
-                  }
-                ]
-              }'
+          WEBHOOK_URL="https://discord.com/api/webhooks/1337904272628514866/IKakRwrZvE470Hf0f1RVkeNB92NyAQk1PvNG_WRHD59W1nVlD7Wqt9g4OR7TibLdMGxG"
+          ISSUE_TITLE="${{ github.event.issue.title }}"
+          ISSUE_BODY="${{ github.event.issue.body }}"
+          ISSUE_URL="${{ github.event.issue.html_url }}"
+          PAYLOAD=$(jq -n \
+            --arg title "$ISSUE_TITLE" \
+            --arg body "$ISSUE_BODY" \
+            --arg url "$ISSUE_URL" \
+            '{title: $title, body: $body, url: $url}')
+          
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            "$WEBHOOK_URL"
