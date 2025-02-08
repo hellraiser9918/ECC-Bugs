@@ -1,0 +1,39 @@
+name: Bug Reports
+description: File an internal bug report.
+title: "[Bug]: "
+labels: ["bug",]
+projects: ["ECC Gaming"]
+body:
+  - type: dropdown
+    id: severity
+    attributes:
+      label: How severe is the bug?
+      multiple: false
+      options:
+        - Game breaking
+        - High severity
+        - Moderate severity
+        - Low severity
+    validations:
+      required: true
+  - type: textarea
+    id: explanation
+    attributes:
+      label: Explain the bug
+      description: What is the bug?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Please provide steps on how we can reproduce the bug (if known)
+    validations:
+      required: true
+  - type: textarea
+    id: media
+    attributes:
+      label: Media
+      description: Please provide screen shots, clips, etc, of this bug happening
+    validations:
+      required: false
