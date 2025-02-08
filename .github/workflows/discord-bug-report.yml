@@ -14,12 +14,23 @@ jobs:
       - name: Send bug report to Discord
         if: |
           contains(toJson(github.event.issue.labels.*.name), 'bug')
-        uses: peter-evans/discord-webhook-action@v1
-        with:
-          url: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          content: |
-            **New Bug Report Created!**
-            **Title**: ${{ github.event.issue.title }}
-            **User**: ${{ github.event.issue.user.login }}
-            **URL**: ${{ github.event.issue.html_url }}
-            **Description**: ${{ github.event.issue.body }}
+        run: |
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
+          -H "Content-Type: application/json" \
+          -d '{
+                "content": "**New Bug Report Created!**",
+                "embeds": [
+                  {
+                    "title": "${{ github.event.issue.title }}",
+                    "description": "${{ github.event.issue.body }}",
+                    "url": "${{ github.event.issue.html_url }}",
+                    "fields": [
+                      {
+                        "name": "User",
+                        "value": "${{ github.event.issue.user.login }}",
+                        "inline": true
+                      }
+                    ]
+                  }
+                ]
+              }'
